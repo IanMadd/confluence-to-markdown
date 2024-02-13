@@ -55,7 +55,15 @@ def create_page_frontmatter(page_text):
 
 def fix_image_links(page_text):
     """Take MD page text and fix image links"""
-    pass
+    image_regex = r"<img src=\"attachments/\w+/((\w|\/|)+\.[\w]+)[\w|\?|\=|\"| |\-|\/|\.|\:]+>"
+    icon_regex = r"<img src=\"images/icons[\/|\w\.|\"| |\=]+>"
+    md_image_regex = r"\[[\w|\-]+\.\w+\]\(attachments/\d+\/(\d+\.\w+)\) \([\w|\/]+\)"
+
+    page_text = re.sub(image_regex, "![](/images/courier/\\g<1>)\n", page_text, 0)
+    page_text = re.sub(icon_regex, "", page_text, 0)
+    page_text = re.sub(md_image_regex, "![](/images/courier/\\g<1>)", page_text, 0)
+
+    return page_text
 
 def fix_links(page_text):
     """Take MD Page text and fix relative links to other pages"""
@@ -96,8 +104,26 @@ def fix_links(page_text):
     return page_text
 
 def remove_divs(page_text):
-    """Remove divs from around code_blocks"""
-    pass
+    """Remove divs"""
+    print('removing divs\n')
+    div_regex = r'( {0,})<div [ |\w|\=|\"|\-|\#|\:|\;]+>[\n| ]{0,}'
+    plain_div_regex = r"( {0,})<div>[\n| ]{0,}"
+    no_spaces_next_line_regex = r"</div>\n{0,}(?=[-|\w])"
+    spaces_next_line_regex = r"( {0,})</div>\n{0,}(?!\n{0,}-)"
+
+    page_text = re.sub(div_regex, "\\g<1>", page_text, count=0)
+    page_text = re.sub(plain_div_regex, "\\g<1>", page_text, count=0)
+    page_text = re.sub(no_spaces_next_line_regex, "", page_text, count=0)
+    page_text = re.sub(spaces_next_line_regex, "\\g<1>", page_text, count=0)
+
+    return page_text
+
+def remove_spans(page_text):
+    """Remove HTML spans"""
+    page_text = re.sub(r"<span [\w|\-|\"| |\=]+>", "", page_text, 0)
+    page_text = re.sub(r"</span>\n{0,1}", "", page_text, 0)
+
+    return page_text
 
 def sentence_case_text(text):
     """Return text in sentence case format"""

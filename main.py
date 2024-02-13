@@ -112,7 +112,7 @@ def munge_md_text(input_dir, output_dir):
         file_path = os.path.join(input_dir, file)
         output_file_path = os.path.join(output_dir, file)
         file_text = convert.open_files.open_file(file_path)
-        
+
         print("\n\nProcessing page: " + file)
 
         ## Munge Markdown Files
@@ -128,8 +128,17 @@ def munge_md_text(input_dir, output_dir):
         ## Fix invalid escape characters
         file_text = convert.munge.fix_invalid_escape_sequence(file_text)
 
+        ## Remove divs
+        file_text = convert.munge.remove_divs(file_text)
+
+        ## Remove spans
+        file_text = convert.munge.remove_spans(file_text)
+
         ## Fix links
         file_text = convert.munge.fix_links(file_text)
+    
+        ## Fix image links
+        file_text = convert.munge.fix_image_links(file_text)
 
         ## Output file
         convert.open_files.output_file(output_file_path, file_text)
@@ -146,6 +155,6 @@ OUTPUT_IMAGE_DIR = OUTPUT_DIR + '/static/images/courier/'
 ignore_files = ['.DS_Store']
 
 
-# convert_html_to_md(ROOT_DIR, TEMP_CONTENT_DIR)
-# move_image_files(ROOT_DIR, OUTPUT_IMAGE_DIR)
+convert_html_to_md(ROOT_DIR, TEMP_CONTENT_DIR)
+move_image_files(ROOT_DIR, OUTPUT_IMAGE_DIR)
 munge_md_text(TEMP_CONTENT_DIR, OUTPUT_CONTENT_DIR)
